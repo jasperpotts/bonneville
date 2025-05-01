@@ -60,7 +60,7 @@ public class FrameUtils {
     }
 
     public static boolean hasActionSidecarsEnabled(@NonNull final MessageFrame frame) {
-        return contractsConfigOf(frame).sidecars().contains(CONTRACT_ACTION);
+        return true;
     }
 
     public static boolean hasActionValidationEnabled(@NonNull final MessageFrame frame) {

@@ -43,6 +43,7 @@ import com.swirlds.state.spi.WritableKVState;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -189,20 +190,23 @@ public class DispatchingEvmFrameState implements EvmFrameState {
         }
     }
 
+    static HashMap<ContractID, Hash> hashes = HashMap.newHashMap(16);
+
     /**
      * {@inheritDoc}
      */
     @Override
     public @NonNull Hash getCodeHash(@NonNull final ContractID contractID) {
         requireNonNull(contractID);
-
-        final var numberedBytecode = contractStateStore.getBytecode(contractID);
-        if (numberedBytecode == null) {
-            return Hash.EMPTY;
-        } else {
-            return CodeFactory.createCode(pbjToTuweniBytes(numberedBytecode.code()), 0, false)
-                    .getCodeHash();
-        }
+        return hashes.computeIfAbsent(contractID, key -> {
+            final var numberedBytecode = contractStateStore.getBytecode(contractID);
+            if (numberedBytecode == null) {
+                return Hash.EMPTY;
+            } else {
+                return CodeFactory.createCode(pbjToTuweniBytes(numberedBytecode.code()), 0, false)
+                        .getCodeHash();
+            }
+        });
     }
 
     /**
